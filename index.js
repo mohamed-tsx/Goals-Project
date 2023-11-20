@@ -1,10 +1,14 @@
 const express = require("express");
 const app = express();
+// const color = require("colors");
 const dotenv = require("dotenv").config();
 const PORT = process.env.PORT || 5000;
 
 const goalRouter = require("./Routes/goalRoutes");
 const { errorHandler } = require("./Middleware/ErrorHandler");
+const connectDB = require("./config/db");
+
+connectDB();
 
 // Middleware for parsing application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: false }));
