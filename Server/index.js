@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express();
-// const color = require("colors");
 const dotenv = require("dotenv").config();
 const PORT = process.env.PORT || 5000;
+const cors = require("cors");
 
 const goalRouter = require("./Routes/goalRoutes");
 const userRoutes = require("./Routes/UserRoutes");
@@ -16,6 +16,8 @@ app.use(express.urlencoded({ extended: false }));
 
 // Middleware for parsing application/json
 app.use(express.json());
+
+app.use(cors());
 
 app.use("/api/goals", goalRouter);
 app.use("/api/users", userRoutes);

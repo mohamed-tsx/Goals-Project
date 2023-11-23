@@ -1,6 +1,11 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { FaUser } from "react-icons/fa";
-
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { register, reset } from "../app/features/auth/authSlice";
+import { RootState } from "../app/store";
+import Spinner from "../Components/Spinner";
 const Register = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -8,8 +13,30 @@ const Register = () => {
     password: "",
     password2: "",
   });
+  interface UserData {
+    name: string;
+    email: string;
+    password: string;
+  }
 
   const { name, email, password, password2 } = formData;
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state: RootState) => state.auth
+  );
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+
+    if (isSuccess || user) {
+      navigate("/");
+    }
+    dispatch(reset());
+  }, [user, isError, isSuccess, message, dispatch, navigate]);
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
@@ -20,8 +47,23 @@ const Register = () => {
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Add your form submission logic here
+
+    if (password !== password2) {
+      toast.error("Passwords do not match");
+    } else {
+      const userData: UserData = {
+        name,
+        email,
+        password,
+      };
+
+      dispatch(register(userData) as any);
+    }
   };
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   return (
     <>
